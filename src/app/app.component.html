@@ -11,7 +11,7 @@
   <div>
     Matched Assets:
     <table>
-      <tr *ngFor="let match of (matchResults | async).resultArray">
+      <tr *ngFor="let match of matchResultArray | async">
         <td>{{match[0] | hex}}</td>
         <td>{{match[1]}}</td>
       </tr>
