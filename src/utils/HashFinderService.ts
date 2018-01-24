@@ -206,7 +206,7 @@ export class HashFinderService {
   private validHash(hash: number, value?: string): HashMatchResults {
     const res = new HashMatchResults();
     if (this.knownHashes.has(hash)) {
-      res.add([hash, this.knownHashes.get(hash) +  ' - ' + value]);
+      res.add([hash, this.knownHashes.get(hash) +  ' - ' + (value || '')]);
     }
     return res;
   }

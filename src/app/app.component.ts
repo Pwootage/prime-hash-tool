@@ -16,7 +16,6 @@ import 'rxjs/add/operator/share';
 export class AppComponent implements OnInit {
   input = new BehaviorSubject<string>('');
   crc32: Observable<number>;
-  crc32Str: Observable<string>;
   matchResults: Observable<HashMatchResults>;
   matchResultArray: Observable<HashMatch[]>;
   latestMatch: HashMatchResults;
