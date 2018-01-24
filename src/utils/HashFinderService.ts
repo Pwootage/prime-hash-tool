@@ -50,6 +50,7 @@ export class HashFinderService {
     console.log('Loading known  hashes');
     const base = document.querySelector('base').href;
     this.loadDemoHashes(http, base);
+    this.loadKnownFolders(http, base);
     this.loadPakHashes(http, base);
   }
 
@@ -106,7 +107,7 @@ export class HashFinderService {
           if (trimmed.length === 0) {
             continue;
           }
-          this.addKnownPath(trimmed);
+          this.addKnownFile(trimmed);
         }
         const end = performance.now();
         const time = end - start;
@@ -117,7 +118,27 @@ export class HashFinderService {
       });
   }
 
-  private addKnownPath(trimmed: string) {
+  private loadKnownFolders(http: HttpClient, base: string) {
+    http.get(base + '/assets/known_folders.txt', {
+      responseType: 'text'
+    }).toPromise()
+      .then((known) => {
+        const lines = known.split('\n');
+        const start = performance.now();
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (trimmed.length === 0) {
+            continue;
+          }
+          this.addKnownFolder(trimmed);
+        }
+        const end = performance.now();
+        const time = end - start;
+        console.log(`Calculated ${this.knownFolders.size} known folders in ${time}ms`);
+      });
+  }
+
+  private addKnownFile(trimmed: string) {
     this.knownPaths.add(trimmed);
     const hash = calcCRC32(trimmed);
     if (this.knownHashes.has(hash)) {
@@ -126,6 +147,13 @@ export class HashFinderService {
     this.knownHashes.set(hash, trimmed);
     const segments = trimmed.split('/');
     for (let i = 0; i < segments.length - 1; i++) {
+      this.knownFolders.add(segments.slice(0, i + 1).join('/'));
+    }
+  }
+
+  private addKnownFolder(trimmed: string) {
+    const segments = trimmed.split('/');
+    for (let i = 0; i < segments.length; i++) {
       this.knownFolders.add(segments.slice(0, i + 1).join('/'));
     }
   }
@@ -167,17 +195,18 @@ export class HashFinderService {
     const res = new HashMatchResults();
 
     for (const folder of this.knownFolders) {
-      const hash = calcCRC32(`${folder}/${str}`);
-      res.add(this.validHash(hash));
+      const toSearch = `${folder}/${str}`;
+      const hash = calcCRC32(toSearch);
+      res.add(this.validHash(hash, toSearch));
     }
 
     return res;
   }
 
-  private validHash(hash: number): HashMatchResults {
+  private validHash(hash: number, value?: string): HashMatchResults {
     const res = new HashMatchResults();
     if (this.knownHashes.has(hash)) {
-      res.add([hash, this.knownHashes.get(hash)]);
+      res.add([hash, this.knownHashes.get(hash) +  ' - ' + value]);
     }
     return res;
   }
