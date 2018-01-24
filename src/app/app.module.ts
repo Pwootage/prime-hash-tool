@@ -6,7 +6,8 @@ import {AppComponent} from './app.component';
 import {HttpClientModule} from '@angular/common/http';
 import {HashFinderService} from '../utils/HashFinderService';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import { HexPipe } from './hex-pipe.pipe';
+import {HexPipe} from './hex-pipe.pipe';
+import {CommonModule} from '@angular/common';
 
 
 @NgModule({
@@ -16,6 +17,7 @@ import { HexPipe } from './hex-pipe.pipe';
   ],
   imports: [
     BrowserModule,
+    CommonModule,
     HttpClientModule,
     FlexLayoutModule
   ],
