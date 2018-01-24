@@ -23,10 +23,11 @@ function calc_crc_table(): Int32Array {
 }
 
 export function calcCRC32(inp: string): number {
+  const str = inp.toLowerCase();
   // Mostly from the wikipedia  article, tbh
   let crc = 0xFFFFFFFF;
-  for (let i = 0; i < inp.length; i++) {
-    const b = inp.charCodeAt(i);
+  for (let i = 0; i < str.length; i++) {
+    const b = str.charCodeAt(i);
     const lookup = (crc ^ b) & 0xFF;
     crc = (crc >>> 8) ^ crc_table[lookup];
   }
